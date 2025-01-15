@@ -50,17 +50,18 @@ def fetch_fpl_data():
 
 def load_yesterday_costs():
     """
-    Load yesterday's cost data from local CSV file.
+    Load yesterday's cost data from GitHub private repository.
     Return an empty DataFrame if the file cannot be accessed.
     """
-    filepath = "yesterday_costs.csv"
+    # Use raw content URL
+    github_url = "https://raw.githubusercontent.com/meharpalbasi/fpl_price_change_daily/main/yesterday_costs.csv"
+    
     try:
-        df = pd.read_csv(
-            filepath,
-            sep=',',
-            encoding='utf-8',
-            engine='python'
-        )
+        response = requests.get(github_url, verify=False)
+        response.raise_for_status()
+        df = pd.read_csv(pd.io.common.StringIO(response.text))
+        print(f"Loaded {len(df)} records from yesterday's data")
+        print("Yesterday's data columns:", df.columns.tolist())
         return df
     except Exception as e:
         print(f"Error loading yesterday's costs: {e}")
