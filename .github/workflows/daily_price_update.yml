@@ -1,0 +1,30 @@
+name: Daily FPL Price Update
+
+on:
+  schedule:
+    # 6am UK time (GMT in winter, will be 7am during BST)
+    - cron: "0 6 * * *"
+  workflow_dispatch:  # Manual trigger for testing
+
+jobs:
+  send-price-update:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests pandas pyTelegramBotAPI
+      
+      - name: Send price update to Telegram
+        env:
+          API_KEY: ${{ secrets.TELEGRAM_API_KEY }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python send_update.py
