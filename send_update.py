@@ -12,7 +12,7 @@ import sys
 
 # Configuration from environment
 API_KEY = os.getenv('API_KEY')
-CHAT_ID = os.getenv('CHAT_ID', '-1002392242605')
+CHAT_ID = os.getenv('CHAT_ID') or '-1002392242605'
 
 if not API_KEY:
     print("ERROR: API_KEY environment variable not set")
