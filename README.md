@@ -1,95 +1,51 @@
 # FPL Price Change Bot
 
-A Telegram bot that posts daily Fantasy Premier League price changes at 9 AM UK time.
+A Telegram bot that posts daily Fantasy Premier League updates to [@fplpricechanges](https://t.me/fplpricechanges).
 
 ## Features
 
-- 📈 **Daily Price Rises** — Lists all players whose price increased overnight
-- 📉 **Daily Price Falls** — Lists all players whose price dropped
-- 🕘 **Automated Schedule** — Posts automatically at 9:00 AM daily
-- 💬 **Manual Commands** — `/pricechanges` to get updates on-demand
+### Live Now
+- 📈 **Daily Price Rises** — Players whose price increased overnight
+- 📉 **Daily Price Falls** — Players whose price dropped
+
+### Planned Features
+See [ROADMAP.md](ROADMAP.md) for upcoming features.
 
 ## How It Works
 
-1. Fetches current player prices from the [FPL API](https://fantasy.premierleague.com/api/bootstrap-static/)
-2. Compares to yesterday's prices stored in a [GitHub repo](https://github.com/meharpalbasi/fpl_price_change_daily)
-3. Posts formatted messages to the Telegram channel
+1. GitHub Action runs daily at 6am UTC
+2. Fetches current prices from FPL API
+3. Compares to yesterday's prices (from [fpl_price_change_daily](https://github.com/meharpalbasi/fpl_price_change_daily))
+4. Sends formatted message to Telegram channel
 
 ## Setup
 
-### Prerequisites
+### Repository Secrets
+Add these in Settings → Secrets → Actions:
+- `TELEGRAM_API_KEY` — Bot token from [@BotFather](https://t.me/botfather)
+- `TELEGRAM_CHAT_ID` — Channel username (e.g., `@fplpricechanges`)
 
-- Python 3.8+
-- A Telegram bot token (from [@BotFather](https://t.me/botfather))
-- Access to the price history repo
+### Manual Test
+Actions tab → "Daily FPL Price Update" → "Run workflow"
 
-### Installation
+## Files
 
-```bash
-# Clone the repo
-git clone https://github.com/meharpalbasi/telegram-bot.git
-cd telegram-bot
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Set environment variable
-export API_KEY="your_telegram_bot_token"
-```
-
-### Configuration
-
-Edit `main.py` to set your target channel/chat:
-
-```python
-CHAT_ID = -1002392242605  # Your Telegram channel/group ID
-```
-
-### Running
-
-```bash
-python main.py
-```
-
-The bot will:
-- Start listening for commands (`/start`, `/pricechanges`)
-- Run the scheduler to post at 9 AM daily
-
-## Bot Commands
-
-| Command | Description |
-|---------|-------------|
-| `/start` | Welcome message |
-| `/pricechanges` | Get current price changes immediately |
-
-## Deployment
-
-Deployed on [Railway](https://railway.app) with:
-- `API_KEY` environment variable set
-- Continuous running via `python main.py`
-
-## Example Output
-
-```
-📈 Price Rises (5)
-
-Salah (MID) - £13.0m → £13.1m (+£0.1m)
-Palmer (MID) - £10.8m → £10.9m (+£0.1m)
-...
-
-📉 Price Falls (3)
-
-Rashford (MID) - £7.2m → £7.1m (-£0.1m)
-...
-```
+- `send_update.py` — Main script that fetches data and sends Telegram message
+- `.github/workflows/daily_price_update.yml` — Cron schedule (6am UTC daily)
 
 ## Tech Stack
 
-- **Language:** Python 3
-- **Bot Framework:** pyTelegramBotAPI (telebot)
-- **Scheduling:** schedule
-- **Data:** pandas
-- **Deployment:** Railway
+- **Language:** Python 3.11
+- **Data:** FPL API + pandas
+- **Messaging:** pyTelegramBotAPI
+- **Hosting:** GitHub Actions (free, no server needed)
+
+## Related Projects
+
+- [fpl_price_change_daily](https://github.com/meharpalbasi/fpl_price_change_daily) — Daily price snapshot
+- [fpl-dbt-analytics](https://github.com/meharpalbasi/fpl-dbt-analytics) — Analytics pipeline
+- [xPoints](https://github.com/meharpalbasi/xPoints) — Expected points model
+- [fplanaly.st](https://fplanaly.st) — Web app
 
 ## License
 
