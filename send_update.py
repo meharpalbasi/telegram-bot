@@ -56,19 +56,24 @@ def load_yesterday_costs():
 
 
 def format_price_changes(df, change_type):
-    """Format price changes for Telegram message."""
-    if df.empty:
-        return f"{change_type}: None"
-    
+    """Format price changes for Telegram message (matches main.py format)."""
     arrow = '🔽' if change_type == 'Price Falls' else '🔼'
     header = f"{change_type} {arrow}\n\n"
-    
-    lines = []
+    subheader = "Player          New Price     Old Price\n"
+
+    if df.empty:
+        return header + "None"
+
+    message_lines = []
     for _, player in df.iterrows():
-        line = f"{player['web_name']}: £{player['now_cost']/10:.1f}m (was £{player['prev_cost']/10:.1f}m)"
-        lines.append(line)
-    
-    return header + "\n".join(lines)
+        line = (
+            f"{player['web_name']:<15}"
+            f"£{player['now_cost']/10:<12.1f}"
+            f"£{player['prev_cost']/10:.1f}"
+        )
+        message_lines.append(line)
+
+    return header + subheader + "\n".join(message_lines)
 
 
 def get_price_changes():
@@ -109,11 +114,11 @@ def main():
     if error:
         message = f"⚠️ FPL Price Update Error\n\n{error}"
     else:
-        today = datetime.datetime.now().strftime("%d %b %Y")
-        rises_msg = format_price_changes(rises, "Price Rises")
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
         falls_msg = format_price_changes(falls, "Price Falls")
+        rises_msg = format_price_changes(rises, "Price Rises")
         
-        message = f"📊 FPL Price Changes - {today}\n\n{rises_msg}\n\n{'─' * 30}\n\n{falls_msg}"
+        message = f"Price Changes for {today}\n\n{falls_msg}\n\n{'─' * 40}\n\n{rises_msg}"
     
     try:
         bot.send_message(CHAT_ID, message)
